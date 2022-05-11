@@ -1,0 +1,35 @@
+{
+    "name": "tomrf/conform",
+    "description": "pdo sql query builder and executor",
+    "keywords": [ "sql", "orm", "query builder", "pdo", "mysql", "sqlite" ],
+    "homepage": "http://github.com/tomrf/conform",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Tomrf\\Conform\\": "src/"
+        }
+    },
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=8.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "phpstan/phpstan": "^1.6",
+        "friendsofphp/php-cs-fixer": "^3.8",
+        "roave/security-advisories": "dev-latest"
+    },
+    "scripts": {
+        "cs-fixer": [
+            "php-cs-fixer fix --diff --verbose --allow-risky=yes"
+        ],
+        "phpstan": [
+            "phpstan analyze --level 8 src"
+        ],
+        "phpunit": [
+            "phpunit --do-not-cache-result"
+        ]
+    }
+}
+

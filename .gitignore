@@ -1,0 +1,4 @@
+vendor/
+*.cache
+test.php
+todo.txt

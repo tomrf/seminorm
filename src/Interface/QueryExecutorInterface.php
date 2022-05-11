@@ -7,6 +7,8 @@ namespace Tomrf\Seminorm\Interface;
 interface QueryExecutorInterface
 {
     /**
+     * Execute query from a QueryBuilderInterface or litteral query string.
+     *
      * @param array<int|string,mixed> $parameters
      */
     public function execute(

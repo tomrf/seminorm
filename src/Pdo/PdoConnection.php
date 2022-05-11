@@ -58,7 +58,7 @@ class PdoConnection implements ConnectionInterface
     }
 
     /**
-     * Get the value of dsn.
+     * Get the value of DSN.
      */
     public function getDsn(): string
     {
@@ -126,6 +126,9 @@ class PdoConnection implements ConnectionInterface
         $this->password = null;
     }
 
+    /**
+     * Disconnect from the database.
+     */
     public function disconnect(): void
     {
         if (null === $this->pdo) {

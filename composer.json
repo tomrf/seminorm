@@ -25,7 +25,7 @@
             "php-cs-fixer fix --diff --verbose --allow-risky=yes"
         ],
         "phpstan": [
-            "phpstan analyze --level 8 src"
+            "phpstan analyze --level 9 src"
         ],
         "phpunit": [
             "phpunit --do-not-cache-result"

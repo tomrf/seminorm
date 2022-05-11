@@ -158,7 +158,7 @@ class QueryBuilder extends SqlQueryCompiler implements QueryBuilderInterface
         );
     }
 
-    public function where(string $column, string $operator, mixed $value): static
+    public function where(string $column, string $operator, int|float|string $value): static
     {
         $this->where[] = [
             'value' => $value,
@@ -172,12 +172,12 @@ class QueryBuilder extends SqlQueryCompiler implements QueryBuilderInterface
         return $this;
     }
 
-    public function whereEqual(string $column, mixed $value): static
+    public function whereEqual(string $column, int|float|string $value): static
     {
         return $this->where($column, '=', $value);
     }
 
-    public function whereNotEqual(string $column, mixed $value): static
+    public function whereNotEqual(string $column, int|float|string $value): static
     {
         return $this->where($column, '!=', $value);
     }

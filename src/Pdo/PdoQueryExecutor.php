@@ -143,9 +143,10 @@ class PdoQueryExecutor implements QueryExecutorInterface
      */
     protected function fetchRow(PDOStatement $statement): Row|false
     {
+        /** @var array<string,null|string>|bool */
         $row = $statement->fetch(PDO::FETCH_ASSOC);
 
-        if (false === $row) {
+        if (\is_bool($row)) {
             return false;
         }
 

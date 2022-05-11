@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tomrf\Conform\Sql;
+namespace Tomrf\Seminorm\Sql;
 
 use DomainException;
 

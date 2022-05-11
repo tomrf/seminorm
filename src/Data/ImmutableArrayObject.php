@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tomrf\Conform\Data;
+namespace Tomrf\Seminorm\Data;
 
 use ArrayObject;
 use OutOfBoundsException;

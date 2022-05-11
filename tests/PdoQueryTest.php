@@ -3,12 +3,12 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
-use Tomrf\Conform\Conform;
-use Tomrf\Conform\Data\Row;
-use Tomrf\Conform\Factory\Factory;
-use Tomrf\Conform\Pdo\PdoConnection;
-use Tomrf\Conform\Pdo\PdoQueryExecutor;
-use Tomrf\Conform\QueryBuilder;
+use Tomrf\Seminorm\Data\Row;
+use Tomrf\Seminorm\Factory\Factory;
+use Tomrf\Seminorm\Pdo\PdoConnection;
+use Tomrf\Seminorm\Pdo\PdoQueryExecutor;
+use Tomrf\Seminorm\QueryBuilder;
+use Tomrf\Seminorm\Seminorm;
 
 /**
  * @internal
@@ -16,11 +16,11 @@ use Tomrf\Conform\QueryBuilder;
  */
 final class PdoQueryTest extends TestCase
 {
-    private static Conform $conform;
+    private static Seminorm $seminorm;
 
     public static function setUpBeforeClass(): void
     {
-        self::$conform = new Conform(
+        self::$seminorm = new Seminorm(
             new PdoConnection(
                 PdoConnection::DSN('sqlite', ':memory:')
             ),
@@ -29,23 +29,23 @@ final class PdoQueryTest extends TestCase
         );
 
         $sql = file_get_contents('tests/sql/countries_schema.sql');
-        self::$conform->execute($sql)->getRowCount();
+        self::$seminorm->execute($sql)->getRowCount();
 
         $sql = file_get_contents('tests/sql/countries_data.sql');
-        self::$conform->execute($sql)->getRowCount();
+        self::$seminorm->execute($sql)->getRowCount();
     }
 
     public function test_connection_is_connected(): void
     {
         static::assertTrue(
-            self::$conform->getConnection()->isConnected()
+            self::$seminorm->getConnection()->isConnected()
         );
     }
 
     public function test_select_all_find_one_returns_instance_of_row(): void
     {
-        $row = self::$conform->execute(
-            self::$conform->query()->selectFrom('countries')
+        $row = self::$seminorm->execute(
+            self::$seminorm->query()->selectFrom('countries')
         )->findOne();
 
         static::assertInstanceOf(Row::class, $row);
@@ -53,8 +53,8 @@ final class PdoQueryTest extends TestCase
 
     public function test_select_all_find_many_returns_array_of_row(): void
     {
-        $rows = self::$conform->execute(
-            self::$conform->query()->selectFrom('countries')
+        $rows = self::$seminorm->execute(
+            self::$seminorm->query()->selectFrom('countries')
         )->findMany();
 
         static::assertIsArray($rows);
@@ -63,8 +63,8 @@ final class PdoQueryTest extends TestCase
 
     public function test_select_find_many_limit1_returns_array_of_one_row(): void
     {
-        $rows = self::$conform->execute(
-            self::$conform->query()
+        $rows = self::$seminorm->execute(
+            self::$seminorm->query()
                 ->selectFrom('countries')
                 ->limit(1)
         )->findMany();
@@ -78,8 +78,8 @@ final class PdoQueryTest extends TestCase
     {
         $columns = ['id', 'phone', 'code', 'name', 'symbol', 'currency', 'continent', 'continent_code'];
 
-        $row = self::$conform->execute(
-            self::$conform->query()
+        $row = self::$seminorm->execute(
+            self::$seminorm->query()
                 ->selectFrom('countries')
         )->findOne();
 
@@ -90,8 +90,8 @@ final class PdoQueryTest extends TestCase
 
     public function test_select_as(): void
     {
-        $row = self::$conform->execute(
-            self::$conform->query()
+        $row = self::$seminorm->execute(
+            self::$seminorm->query()
                 ->selectFrom('countries')
                 ->selectAs('symbol', 'currency_symbol')
         )->findOne();
@@ -101,8 +101,8 @@ final class PdoQueryTest extends TestCase
 
     public function test_select_raw(): void
     {
-        $row = self::$conform->execute(
-            self::$conform->query()
+        $row = self::$seminorm->execute(
+            self::$seminorm->query()
                 ->selectFrom('countries')
                 ->selectRaw('COUNT()', 'RANDOM()', '"string"')
         )->findOne();
@@ -114,8 +114,8 @@ final class PdoQueryTest extends TestCase
 
     public function test_select_raw_as(): void
     {
-        $row = self::$conform->execute(
-            self::$conform->query()
+        $row = self::$seminorm->execute(
+            self::$seminorm->query()
                 ->selectFrom('countries')
                 ->selectRawAs('COUNT()', 'number_of_rows')
         )->findOne();

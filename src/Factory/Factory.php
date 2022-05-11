@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Tomrf\Conform\Factory;
+namespace Tomrf\Seminorm\Factory;
 
-use Tomrf\Conform\Interface\FactoryInterface;
+use Tomrf\Seminorm\Interface\FactoryInterface;
 
 class Factory implements FactoryInterface
 {

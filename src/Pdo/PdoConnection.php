@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Tomrf\Conform\Pdo;
+namespace Tomrf\Seminorm\Pdo;
 
 use PDO;
 use RuntimeException;
-use Tomrf\Conform\Interface\ConnectionInterface;
+use Tomrf\Seminorm\Interface\ConnectionInterface;
 
 class PdoConnection implements ConnectionInterface
 {

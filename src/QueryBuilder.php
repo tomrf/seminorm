@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Tomrf\Conform;
+namespace Tomrf\Seminorm;
 
 use InvalidArgumentException;
-use Tomrf\Conform\Interface\QueryBuilderInterface;
-use Tomrf\Conform\Sql\SqlQueryCompiler;
+use Tomrf\Seminorm\Interface\QueryBuilderInterface;
+use Tomrf\Seminorm\Sql\SqlQueryCompiler;
 
 class QueryBuilder extends SqlQueryCompiler implements QueryBuilderInterface
 {

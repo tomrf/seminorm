@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Tomrf\Conform;
+namespace Tomrf\Seminorm;
 
-use Tomrf\Conform\Factory\Factory;
-use Tomrf\Conform\Interface\QueryBuilderInterface;
-use Tomrf\Conform\Pdo\PdoConnection;
-use Tomrf\Conform\Pdo\PdoQueryExecutor;
+use Tomrf\Seminorm\Factory\Factory;
+use Tomrf\Seminorm\Interface\QueryBuilderInterface;
+use Tomrf\Seminorm\Pdo\PdoConnection;
+use Tomrf\Seminorm\Pdo\PdoQueryExecutor;
 
-class Conform
+class Seminorm
 {
     public function __construct(
         protected PdoConnection $connection,

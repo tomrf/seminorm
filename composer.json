@@ -1,13 +1,13 @@
 {
-    "name": "tomrf/conform",
+    "name": "tomrf/seminorm",
     "description": "pdo sql query builder and executor",
     "keywords": [ "sql", "orm", "query builder", "pdo", "mysql", "sqlite" ],
-    "homepage": "http://github.com/tomrf/conform",
+    "homepage": "http://github.com/tomrf/seminorm",
     "type": "library",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Tomrf\\Conform\\": "src/"
+            "Tomrf\\Seminorm\\": "src/"
         }
     },
     "minimum-stability": "stable",

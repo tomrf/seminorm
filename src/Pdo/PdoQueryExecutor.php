@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Tomrf\Conform\Pdo;
+namespace Tomrf\Seminorm\Pdo;
 
 use PDO;
 use PDOException;
 use PDOStatement;
 use RuntimeException;
-use Tomrf\Conform\Data\NullValue;
-use Tomrf\Conform\Data\Row;
-use Tomrf\Conform\Data\Value;
-use Tomrf\Conform\Interface\QueryBuilderInterface;
-use Tomrf\Conform\Interface\QueryExecutorInterface;
+use Tomrf\Seminorm\Data\NullValue;
+use Tomrf\Seminorm\Data\Row;
+use Tomrf\Seminorm\Data\Value;
+use Tomrf\Seminorm\Interface\QueryBuilderInterface;
+use Tomrf\Seminorm\Interface\QueryExecutorInterface;
 
 class PdoQueryExecutor implements QueryExecutorInterface
 {

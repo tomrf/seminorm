@@ -13,8 +13,7 @@
          failOnWarning="true"
          verbose="true"
          cacheResult="false"
-         noInteraction="true"
-         >
+         noInteraction="true">
     <testsuites>
         <testsuite name="default">
             <directory>tests</directory>

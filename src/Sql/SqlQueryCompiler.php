@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tomrf\Seminorm\Sql;
 
 use DomainException;
+use RuntimeException;
 
 class SqlQueryCompiler
 {
@@ -54,18 +55,18 @@ class SqlQueryCompiler
     }
 
     /**
-     * @return array<int|string,mixed>
+     * @return array<null|bool|float|int|int|string>
      */
     public function getQueryParameters(): array
     {
-        if (0 === \count($this->queryParameters)) {
-            $this->compileQuery();
-        }
+        $this->queryParameters = [];
+
+        $this->compileQuery();
 
         return $this->queryParameters;
     }
 
-    protected function _select(): string
+    protected function compileClauseSelect(): string
     {
         if (0 === \count($this->select)) {
             return sprintf('%s.*', $this->quoteExpression($this->table));
@@ -73,35 +74,32 @@ class SqlQueryCompiler
 
         foreach ($this->select as $key => $select) {
             $selectExpression = sprintf(
-                '%s%s%s',
+                '%s%s%s%s',
                 $selectExpression ?? '',
                 $select['expression'],
-                isset($select['alias']) ? (' AS '.$select['alias']) : ''
+                isset($select['alias']) ? (' AS '.$select['alias']) : '',
+                ($key !== array_key_last($this->select)) ? ', ' : '',
             );
-
-            if ($key !== array_key_last($this->select)) {
-                $selectExpression .= ', ';
-            }
         }
 
         return $selectExpression;
     }
 
-    protected function _join(): string
+    protected function compileClauseJoin(): string
     {
-        $joinClause = '';
         foreach ($this->join as $join) {
-            $joinClause .= sprintf(
-                ' JOIN %s ON %s',
+            $joinClause = sprintf(
+                '%s JOIN %s ON %s',
+                $joinClause ?? '',
                 $this->quoteExpression($join['table']),
                 $this->quoteExpression($join['condition'])
             );
         }
 
-        return $joinClause;
+        return $joinClause ?? '';
     }
 
-    protected function _insert(): string
+    protected function compileClauseInsert(): string
     {
         $columns = '';
         $values = '';
@@ -115,15 +113,16 @@ class SqlQueryCompiler
             $value = $valueData['value'];
 
             $column = (string) $column;
-
             $columns .= sprintf('%s, ', $this->quoteExpression($column));
 
             if (true === $isRaw) {
                 $values .= sprintf('%s, ', $value);
-            } else {
-                $values .= '?, ';
-                $this->queryParameters[] = $value;
+
+                continue;
             }
+
+            $values .= '?, ';
+            $this->queryParameters[] = $value;
         }
 
         return sprintf(
@@ -133,7 +132,7 @@ class SqlQueryCompiler
         );
     }
 
-    protected function _set(): string
+    protected function compileClauseSet(): string
     {
         if (0 === \count($this->set)) {
             return '';
@@ -147,28 +146,25 @@ class SqlQueryCompiler
 
             if (true === $isRaw) {
                 $statement .= sprintf(
-                    '%s = %s',
+                    '%s = %s, ',
                     $this->quoteExpression((string) $column),
                     $value
                 );
-            } else {
-                $statement .= sprintf(
-                    '%s = ?',
-                    $this->quoteExpression((string) $column),
-                );
 
-                $this->queryParameters[] = $value;
+                continue;
             }
 
-            if ($column !== array_key_last($this->set)) {
-                $statement .= ', ';
-            }
+            $statement .= sprintf(
+                '%s = ?, ',
+                $this->quoteExpression((string) $column),
+            );
+            $this->queryParameters[] = $value;
         }
 
-        return $statement;
+        return trim($statement, ', ');
     }
 
-    protected function _where(): string
+    protected function compileClauseWhere(): string
     {
         if (0 === \count($this->where)) {
             return '';
@@ -191,7 +187,7 @@ class SqlQueryCompiler
         return $whereCondition;
     }
 
-    protected function _orderBy(): string
+    protected function compileClauseOrderBy(): string
     {
         if (0 === \count($this->order)) {
             return '';
@@ -210,66 +206,56 @@ class SqlQueryCompiler
         return $orderByClause;
     }
 
+    protected function compileClauseLimit(): string
+    {
+        return sprintf(
+            '%s%s',
+            (-1 !== $this->limit) ? sprintf(' LIMIT %d', $this->limit) : '',
+            (-1 !== $this->limit && -1 !== $this->offset) ? sprintf(' OFFSET %d', $this->offset) : ''
+        );
+    }
+
+    protected function compileClauseTable(): string
+    {
+        return $this->quoteExpression($this->table);
+    }
+
+    protected function compileClauseOnDuplicateKey(): string
+    {
+        return $this->onDuplicateKey
+            ? sprintf('ON DUPLICATE KEY %s', $this->onDuplicateKey)
+            : '';
+    }
+
     protected function compileQuery(): string
     {
-        // INSERT [LOW_PRIORITY | DELAYED | HIGH_PRIORITY] [IGNORE]
-        //     [INTO] tbl_name
-        //     SET assignment_list
-        //     [ON DUPLICATE KEY UPDATE assignment_list]
+        if (!$this->statement) {
+            throw new RuntimeException('No SQL statement specified for query');
+        }
 
-        if (str_starts_with($this->statement, 'INSERT')) {
-            return trim(sprintf(
-                'INSERT INTO %s %s %s',
-                $this->quoteExpression($this->table),
-                $this->_insert(),
-                $this->onDuplicateKey ? 'ON DUPLICATE KEY '.$this->onDuplicateKey : ''
+        $template = match ($this->statement) {
+            'INSERT INTO' => 'INSERT INTO {table} {insert} {onDuplicateKey}',
+            'UPDATE' => 'UPDATE {table} SET {set}{where}{orderBy}{limit}',
+            'DELETE FROM' => 'DELETE FROM {table}{where}{orderBy}{limit}',
+            'SELECT' => 'SELECT {select} FROM {table}{join}{where}{orderBy}{limit}',
+            default => null
+        };
+
+        if (null === $template) {
+            throw new RuntimeException(sprintf(
+                'Unknown SQL statement specified for query: "%s"',
+                $this->statement
             ));
         }
 
-        // UPDATE [LOW_PRIORITY] [IGNORE] table_reference
-        //     SET assignment_list
-        //     [WHERE where_condition]
-        //     [ORDER BY ...]
-        //     [LIMIT row_count]
+        preg_match_all('/\{(\w+)\}/', $template, $matches);
 
-        if (str_starts_with($this->statement, 'UPDATE')) {
-            return trim(sprintf(
-                'UPDATE %s SET %s%s%s%s%s',
-                $this->quoteExpression($this->table),
-                $this->_set(),
-                $this->_where(),
-                $this->_orderBy(),
-                (-1 !== $this->limit) ? sprintf(' LIMIT %d', $this->limit) : '',
-                (-1 !== $this->offset) ? sprintf(' OFFSET %d', $this->offset) : ''
-            ));
+        foreach (array_keys($matches[0]) as $key) {
+            $func = sprintf('compileClause%s', ucfirst($matches[1][$key]));
+            $matches[1][$key] = $this->{$func}();
         }
 
-        // DELETE [LOW_PRIORITY] [QUICK] [IGNORE] FROM tbl_name [[AS] tbl_alias]
-        //     [WHERE where_condition]
-        //     [ORDER BY ...]
-        //     [LIMIT row_count]
-
-        if (str_starts_with($this->statement, 'DELETE')) {
-            return trim(sprintf(
-                'DELETE FROM %s%s%s%s%s',
-                $this->quoteExpression($this->table),
-                $this->_where(),
-                $this->_orderBy(),
-                (-1 !== $this->limit) ? sprintf(' LIMIT %d', $this->limit) : '',
-                (-1 !== $this->offset) ? sprintf(' OFFSET %d', $this->offset) : ''
-            ));
-        }
-
-        return sprintf(
-            'SELECT %s FROM %s%s%s%s%s%s',
-            $this->_select(),
-            $this->quoteExpression($this->table),
-            $this->_join(),
-            $this->_where(),
-            $this->_orderBy(),
-            (-1 !== $this->limit) ? sprintf(' LIMIT %d', $this->limit) : '',
-            (-1 !== $this->offset) ? sprintf(' OFFSET %d', $this->offset) : ''
-        );
+        return trim(str_replace($matches[0], $matches[1], $template));
     }
 
     protected function assertQueryState(): void

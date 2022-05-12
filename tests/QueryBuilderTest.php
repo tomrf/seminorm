@@ -37,6 +37,7 @@ final class QueryBuilderTest extends TestCase
     public function test_querybuilder_sql_statement_syntax__update(): void
     {
         $queryBuilder = new QueryBuilder();
+
         $queryBuilder = $queryBuilder
             ->update('table')
             ->set('column', 'value')
@@ -44,6 +45,7 @@ final class QueryBuilderTest extends TestCase
             ->setRaw('column3', 'RAW_EXPRESSION')
             ->whereEqual('id', 1000)
         ;
+
         static::assertSame(
             'UPDATE `table` SET `column` = ?, `column2` = ?, `column3` = RAW_EXPRESSION WHERE `id` = ?',
             $queryBuilder->getQuery()

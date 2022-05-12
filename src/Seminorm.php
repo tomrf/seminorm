@@ -8,6 +8,7 @@ use Tomrf\Seminorm\Factory\Factory;
 use Tomrf\Seminorm\Interface\QueryBuilderInterface;
 use Tomrf\Seminorm\Pdo\PdoConnection;
 use Tomrf\Seminorm\Pdo\PdoQueryExecutor;
+use Tomrf\Seminorm\QueryBuilder\QueryBuilder;
 
 class Seminorm
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tomrf\Seminorm;
+namespace Tomrf\Seminorm\QueryBuilder;
 
 use InvalidArgumentException;
 use Tomrf\Seminorm\Interface\QueryBuilderInterface;
@@ -10,6 +10,10 @@ use Tomrf\Seminorm\Sql\SqlCompiler;
 
 class QueryBuilder extends SqlCompiler implements QueryBuilderInterface
 {
+    use OrderByMethodsTrait;
+    use SelectMethodsTrait;
+    use WhereMethodsTrait;
+
     protected string $table = '';
     protected string $statement = '';
 
@@ -74,48 +78,6 @@ class QueryBuilder extends SqlCompiler implements QueryBuilderInterface
         return $this;
     }
 
-    public function select(string ...$columns): static
-    {
-        foreach ($columns as $column) {
-            $this->select[] = [
-                'expression' => $this->quoteExpression(trim($column)),
-            ];
-        }
-
-        return $this;
-    }
-
-    public function selectAs(string $expression, string $alias): static
-    {
-        $this->select[] = [
-            'expression' => $this->quoteExpression(trim($expression)),
-            'alias' => $this->quoteString(trim($alias)),
-        ];
-
-        return $this;
-    }
-
-    public function selectRaw(string ...$params): static
-    {
-        foreach ($params as $expression) {
-            $this->select[] = [
-                'expression' => trim($expression),
-            ];
-        }
-
-        return $this;
-    }
-
-    public function selectRawAs(string $expression, string $alias): static
-    {
-        $this->select[] = [
-            'expression' => trim($expression),
-            'alias' => $this->quoteString(trim($alias)),
-        ];
-
-        return $this;
-    }
-
     public function alias(string $expression, string $alias): static
     {
         foreach ($this->select as $i => $select) {
@@ -132,81 +94,6 @@ class QueryBuilder extends SqlCompiler implements QueryBuilderInterface
         $this->join[] = [
             'table' => trim($table),
             'condition' => trim($joinCondition),
-        ];
-
-        return $this;
-    }
-
-    public function whereRaw(string $expression): static
-    {
-        $key = (string) crc32($expression);
-        $this->where[$key] = [
-            'condition' => $expression,
-        ];
-
-        return $this;
-    }
-
-    public function whereColumnRaw(string $column, string $expression): static
-    {
-        return $this->whereRaw(
-            sprintf(
-                '%s %s',
-                $this->quoteExpression(trim($column)),
-                $expression
-            )
-        );
-    }
-
-    public function where(string $column, string $operator, int|float|string $value): static
-    {
-        $this->where[] = [
-            'value' => $value,
-            'condition' => sprintf(
-                '%s %s ?',
-                $this->quoteExpression(trim($column)),
-                trim($operator),
-            ),
-        ];
-
-        return $this;
-    }
-
-    public function whereEqual(string $column, int|float|string $value): static
-    {
-        return $this->where($column, '=', $value);
-    }
-
-    public function whereNotEqual(string $column, int|float|string $value): static
-    {
-        return $this->where($column, '!=', $value);
-    }
-
-    public function whereNull(string $column): static
-    {
-        return $this->whereColumnRaw($column, 'IS NULL');
-    }
-
-    public function whereNotNull(string $column): static
-    {
-        return $this->whereColumnRaw($column, 'IS NOT NULL');
-    }
-
-    public function orderByAsc(string $column): static
-    {
-        $this->order[] = [
-            'column' => trim($column),
-            'direction' => 'ASC',
-        ];
-
-        return $this;
-    }
-
-    public function orderByDesc(string $column): static
-    {
-        $this->order[] = [
-            'column' => trim($column),
-            'direction' => 'DESC',
         ];
 
         return $this;

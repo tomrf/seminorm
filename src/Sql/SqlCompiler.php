@@ -17,32 +17,32 @@ class SqlCompiler
     protected ?string $onDuplicateKey = null;
 
     /**
-     * @var array<array<null|float|int|string>>
+     * @var array<array<null|bool|float|int|string>>
      */
     protected array $select = [];
 
     /**
-     * @var array<array<null|float|int|string>>
+     * @var array<array<null|bool|float|int|string>>
      */
     protected array $join = [];
 
     /**
-     * @var array<array<null|float|int|string>>
+     * @var array<array<null|bool|float|int|string>>
      */
     protected array $where = [];
 
     /**
-     * @var array<array<null|float|int|string>>
+     * @var array<array<null|bool|float|int|string>>
      */
     protected array $order = [];
 
     /**
-     * @var array<array<null|float|int|string>>
+     * @var array<array<null|bool|float|int|string>>
      */
     protected array $set = [];
 
     /**
-     * @var array<array<null|float|int|string>>
+     * @var array<array<null|bool|float|int|string>>
      */
     protected array $queryParameters = [];
 

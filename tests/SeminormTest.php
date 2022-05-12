@@ -7,7 +7,7 @@ use Tomrf\Seminorm\Data\Row;
 use Tomrf\Seminorm\Factory\Factory;
 use Tomrf\Seminorm\Pdo\PdoConnection;
 use Tomrf\Seminorm\Pdo\PdoQueryExecutor;
-use Tomrf\Seminorm\QueryBuilder;
+use Tomrf\Seminorm\QueryBuilder\QueryBuilder;
 use Tomrf\Seminorm\Seminorm;
 
 /**

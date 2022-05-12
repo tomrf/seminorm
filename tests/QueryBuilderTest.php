@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Tomrf\Seminorm\Factory\Factory;
 use Tomrf\Seminorm\Pdo\PdoConnection;
 use Tomrf\Seminorm\Pdo\PdoQueryExecutor;
-use Tomrf\Seminorm\QueryBuilder;
+use Tomrf\Seminorm\QueryBuilder\QueryBuilder;
 use Tomrf\Seminorm\Seminorm;
 
 /**

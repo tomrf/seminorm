@@ -6,9 +6,9 @@ namespace Tomrf\Seminorm;
 
 use InvalidArgumentException;
 use Tomrf\Seminorm\Interface\QueryBuilderInterface;
-use Tomrf\Seminorm\Sql\SqlQueryCompiler;
+use Tomrf\Seminorm\Sql\SqlCompiler;
 
-class QueryBuilder extends SqlQueryCompiler implements QueryBuilderInterface
+class QueryBuilder extends SqlCompiler implements QueryBuilderInterface
 {
     protected string $table = '';
     protected string $statement = '';

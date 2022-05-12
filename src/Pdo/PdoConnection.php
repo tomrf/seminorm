@@ -24,11 +24,7 @@ class PdoConnection implements ConnectionInterface
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         ],
-        bool $connectImmediately = true,
     ) {
-        if (true === $connectImmediately) {
-            $this->connect();
-        }
     }
 
     /**
@@ -76,7 +72,7 @@ class PdoConnection implements ConnectionInterface
     /**
      * Static helper function to build DSN string for PDO.
      */
-    public static function DSN(
+    public static function dsn(
         string $driver,
         string $dbname,
         string $host = null,
@@ -84,19 +80,17 @@ class PdoConnection implements ConnectionInterface
         string $charset = 'utf8mb4'
     ): string {
         if ('sqlite' === mb_strtolower($driver)) {
-            $dsn = sprintf('%s:%s', $driver, $dbname);
-        } else {
-            $dsn = sprintf(
-                '%s:host=%s;dbname=%s;port=%d;charset=%s',
-                $driver,
-                $host,
-                $dbname,
-                $port,
-                $charset
-            );
+            return sprintf('%s:%s', $driver, $dbname);
         }
 
-        return $dsn;
+        return sprintf(
+            '%s:host=%s;dbname=%s;port=%d;charset=%s',
+            $driver,
+            $host,
+            $dbname,
+            $port,
+            $charset
+        );
     }
 
     /**

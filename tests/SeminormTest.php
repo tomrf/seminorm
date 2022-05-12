@@ -22,11 +22,13 @@ final class SeminormTest extends TestCase
     {
         self::$seminorm = new Seminorm(
             new PdoConnection(
-                PdoConnection::DSN('sqlite', ':memory:')
+                PdoConnection::dsn('sqlite', ':memory:')
             ),
             new Factory(QueryBuilder::class),
             new Factory(PdoQueryExecutor::class),
         );
+
+        self::$seminorm->getConnection()->connect();
 
         $sql = file_get_contents('tests/sql/countries_schema.sql');
         self::$seminorm->execute($sql)->getRowCount();

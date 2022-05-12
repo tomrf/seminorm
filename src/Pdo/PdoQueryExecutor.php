@@ -110,13 +110,13 @@ class PdoQueryExecutor implements QueryExecutorInterface
             $query
         );
 
-        if ($statement instanceof PDOStatement) {
-            $statement->execute($queryParameters);
-        } else {
+        if (!$statement instanceof PDOStatement) {
             throw new RuntimeException(
                 'Could not get prepared statement, connection error?'
             );
         }
+
+        $statement->execute($queryParameters);
 
         return $statement;
     }
@@ -129,7 +129,8 @@ class PdoQueryExecutor implements QueryExecutorInterface
     protected function fetchAllRows(PDOStatement $statement): array
     {
         for ($rows = [];;) {
-            if (($row = $this->fetchRow($statement)) === false) {
+            $row = $this->fetchRow($statement);
+            if (false === $row) {
                 break;
             }
             $rows[] = $row;
@@ -155,9 +156,10 @@ class PdoQueryExecutor implements QueryExecutorInterface
         foreach ($row as $key => $value) {
             if (null === $value) {
                 $values[(string) $key] = new NullValue();
-            } else {
-                $values[(string) $key] = new Value($value);
+
+                continue;
             }
+            $values[(string) $key] = new Value($value);
         }
 
         return new Row($values);

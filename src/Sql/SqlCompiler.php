@@ -6,7 +6,7 @@ namespace Tomrf\Seminorm\Sql;
 
 use RuntimeException;
 
-class SqlQueryCompiler
+class SqlCompiler
 {
     protected string $table;
     protected string $statement;
@@ -125,7 +125,7 @@ class SqlQueryCompiler
         }
 
         return sprintf(
-            '(%s) VALUES (%s)',
+            ' (%s) VALUES (%s)',
             trim($columns, ', '),
             trim($values, ', ')
         );
@@ -222,7 +222,7 @@ class SqlQueryCompiler
     protected function compileClauseOnDuplicateKey(): string
     {
         return $this->onDuplicateKey
-            ? sprintf('ON DUPLICATE KEY %s', $this->onDuplicateKey)
+            ? sprintf(' ON DUPLICATE KEY %s', $this->onDuplicateKey)
             : '';
     }
 
@@ -233,7 +233,7 @@ class SqlQueryCompiler
         }
 
         $template = match ($this->statement) {
-            'INSERT INTO' => 'INSERT INTO {table} {insert} {onDuplicateKey}',
+            'INSERT INTO' => 'INSERT INTO {table}{insert}{onDuplicateKey}',
             'UPDATE' => 'UPDATE {table} SET {set}{where}{orderBy}{limit}',
             'DELETE FROM' => 'DELETE FROM {table}{where}{orderBy}{limit}',
             'SELECT' => 'SELECT {select} FROM {table}{join}{where}{orderBy}{limit}',
@@ -293,10 +293,6 @@ class SqlQueryCompiler
             return $expression;
         }
 
-        if ('*' === $expression) {
-            return $expression;
-        }
-
         return sprintf('`%s`', $expression);
     }
 
@@ -312,10 +308,6 @@ class SqlQueryCompiler
 
     protected function isValidColumnName(string $name): bool
     {
-        if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $name)) {
-            return false;
-        }
-
-        return true;
+        return (bool) (preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $name));
     }
 }

@@ -21,15 +21,15 @@ final class PdoConnectionTest extends TestCase
     {
         self::$seminorm = new Seminorm(
             new PdoConnection(
-                PdoConnection::DSN('sqlite', ':memory:'),
+                PdoConnection::dsn('sqlite', ':memory:'),
                 null,
                 null,
                 null,
-                false
             ),
             new Factory(QueryBuilder::class),
             new Factory(PdoQueryExecutor::class),
         );
+        // self::$seminorm->getConnection()->connect();
     }
 
     public function test_not_connected_yet(): void

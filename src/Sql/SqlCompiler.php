@@ -42,7 +42,7 @@ class SqlCompiler
     protected array $set = [];
 
     /**
-     * @var array<array<null|bool|float|int|string>>
+     * @var array<int|string,null|bool|float|int|string>
      */
     protected array $queryParameters = [];
 

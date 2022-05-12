@@ -26,7 +26,7 @@
             "php-cs-fixer fix --diff --verbose --allow-risky=yes"
         ],
         "phpstan": [
-            "phpstan analyze --level 5 src/"
+            "phpstan analyze --level 7 src/"
         ],
         "phpunit": [
             "phpunit"

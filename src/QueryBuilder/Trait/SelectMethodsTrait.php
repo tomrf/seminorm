@@ -27,9 +27,9 @@ trait SelectMethodsTrait
         return $this;
     }
 
-    public function selectRaw(string ...$params): static
+    public function selectRaw(string ...$expressions): static
     {
-        foreach ($params as $expression) {
+        foreach ($expressions as $expression) {
             $this->select[] = [
                 'expression' => trim($expression),
             ];

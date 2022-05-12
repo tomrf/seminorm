@@ -29,7 +29,7 @@ class Seminorm
 
     public function query(): QueryBuilder
     {
-        return $this->queryBuilderFactory->make();
+        return $this->queryBuilderFactory->make(); // @phpstan-ignore-line
     }
 
     /**
@@ -39,7 +39,7 @@ class Seminorm
         QueryBuilderInterface|string $query,
         array $parameters = []
     ): PdoQueryExecutor {
-        return $this->queryExecutorFactory->make(
+        return $this->queryExecutorFactory->make( // @phpstan-ignore-line
             $this->connection
         )->execute(
             $query,

@@ -11,7 +11,10 @@
          convertDeprecationsToExceptions="true"
          failOnRisky="true"
          failOnWarning="true"
-         verbose="true">
+         verbose="true"
+         cacheResult="false"
+         noInteraction="true"
+         >
     <testsuites>
         <testsuite name="default">
             <directory>tests</directory>

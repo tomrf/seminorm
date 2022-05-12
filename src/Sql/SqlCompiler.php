@@ -90,8 +90,8 @@ class SqlCompiler
             $joinClause = sprintf(
                 '%s JOIN %s ON %s',
                 $joinClause ?? '',
-                $this->quoteExpression($join['table']),
-                $this->quoteExpression($join['condition'])
+                $this->quoteExpression((string) $join['table']),
+                $this->quoteExpression((string) $join['condition'])
             );
         }
 
@@ -196,7 +196,7 @@ class SqlCompiler
         foreach ($this->order as $key => $orderBy) {
             $orderByClause .= sprintf(
                 '%s %s%s',
-                $this->quoteExpression($orderBy['column']),
+                $this->quoteExpression((string) $orderBy['column']),
                 $orderBy['direction'],
                 ($key !== array_key_last($this->order)) ? ', ' : ''
             );

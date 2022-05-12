@@ -54,7 +54,7 @@ class QueryBuilder extends SqlCompiler implements QueryBuilderInterface
         return $this;
     }
 
-    public function set(string $column, mixed $value): static
+    public function set(string $column, float|int|string $value): static
     {
         $key = trim($column);
 

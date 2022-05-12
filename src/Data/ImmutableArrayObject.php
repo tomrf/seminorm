@@ -23,7 +23,7 @@ class ImmutableArrayObject extends ArrayObject
 
     public function __isset(mixed $name)
     {
-        return $this->offsetExists($name);
+        return $this->offsetExists($name); // @phpstan-ignore-line
     }
 
     /**

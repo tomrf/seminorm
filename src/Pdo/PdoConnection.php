@@ -117,7 +117,7 @@ class PdoConnection implements ConnectionInterface
             );
         }
 
-        $this->password = null;
+        // $this->password = null;
     }
 
     /**

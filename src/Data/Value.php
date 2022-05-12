@@ -23,7 +23,7 @@ class Value implements Stringable, Countable, Serializable
 
     public function serialize(): string
     {
-        return $this->asBase64();
+        return base64_encode($this->data);
     }
 
     public function unserialize(string $data): void
@@ -55,16 +55,6 @@ class Value implements Stringable, Countable, Serializable
     public function asFloat(): float
     {
         return (float) $this->data;
-    }
-
-    public function asBase64(): string
-    {
-        return base64_encode($this->data);
-    }
-
-    public function asMd5Hex(): string
-    {
-        return md5($this->data);
     }
 
     public function asBoolean(): bool

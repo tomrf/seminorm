@@ -6,6 +6,20 @@ namespace Tomrf\Seminorm\QueryBuilder\Trait;
 
 trait WhereMethodsTrait
 {
+    public function where(string $column, string $operator, int|float|string $value): static
+    {
+        $this->where[] = [
+            'value' => $value,
+            'condition' => sprintf(
+                '%s %s ?',
+                $this->quoteExpression(trim($column)),
+                trim($operator),
+            ),
+        ];
+
+        return $this;
+    }
+
     public function whereRaw(string $expression): static
     {
         $key = (string) crc32($expression);
@@ -25,20 +39,6 @@ trait WhereMethodsTrait
                 $expression
             )
         );
-    }
-
-    public function where(string $column, string $operator, int|float|string $value): static
-    {
-        $this->where[] = [
-            'value' => $value,
-            'condition' => sprintf(
-                '%s %s ?',
-                $this->quoteExpression(trim($column)),
-                trim($operator),
-            ),
-        ];
-
-        return $this;
     }
 
     public function whereEqual(string $column, int|float|string $value): static

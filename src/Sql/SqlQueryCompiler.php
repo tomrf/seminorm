@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tomrf\Seminorm\Sql;
 
-use DomainException;
 use RuntimeException;
 
 class SqlQueryCompiler
@@ -243,7 +242,7 @@ class SqlQueryCompiler
 
         if (null === $template) {
             throw new RuntimeException(sprintf(
-                'Unknown SQL statement specified for query: "%s"',
+                'Unknown SQL statement: "%s"',
                 $this->statement
             ));
         }
@@ -256,15 +255,6 @@ class SqlQueryCompiler
         }
 
         return trim(str_replace($matches[0], $matches[1], $template));
-    }
-
-    protected function assertQueryState(): void
-    {
-        if (-1 !== $this->offset && -1 === $this->limit) {
-            throw new DomainException(
-                'Invalid query: offset specified without a limit clause'
-            );
-        }
     }
 
     protected function quoteString(string $string): string

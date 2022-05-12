@@ -26,11 +26,17 @@ class ImmutableArrayObject extends ArrayObject
         return $this->offsetExists($name);
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function offsetSet(mixed $key, mixed $value): void
     {
         $this->accessViolation('modifying');
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function offsetUnset(mixed $key): void
     {
         $this->accessViolation('modifying');

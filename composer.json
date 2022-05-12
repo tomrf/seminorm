@@ -18,18 +18,26 @@
         "phpunit/phpunit": "^9.5",
         "phpstan/phpstan": "^1.6",
         "friendsofphp/php-cs-fixer": "^3.8",
-        "roave/security-advisories": "dev-latest"
+        "roave/security-advisories": "dev-latest",
+        "phpmd/phpmd": "^2.12"
     },
     "scripts": {
         "cs-fixer": [
             "php-cs-fixer fix --diff --verbose --allow-risky=yes"
         ],
         "phpstan": [
-            "phpstan analyze --level 9 src"
+            "phpstan analyze --level 5 src/"
         ],
         "phpunit": [
-            "phpunit --do-not-cache-result"
+            "phpunit"
+        ],
+        "phpmd": [
+            "phpmd src/ ansi .phpmd-ruleset.xml"
+        ],
+        "test": [
+            "@phpunit",
+            "@phpmd",
+            "@phpstan"
         ]
     }
 }
-

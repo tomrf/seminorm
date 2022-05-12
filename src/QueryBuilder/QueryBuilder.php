@@ -10,9 +10,9 @@ use Tomrf\Seminorm\Sql\SqlCompiler;
 
 class QueryBuilder extends SqlCompiler implements QueryBuilderInterface
 {
-    use OrderByMethodsTrait;
-    use SelectMethodsTrait;
-    use WhereMethodsTrait;
+    use Trait\OrderByMethodsTrait;
+    use Trait\SelectMethodsTrait;
+    use Trait\WhereMethodsTrait;
 
     protected string $table = '';
     protected string $statement = '';

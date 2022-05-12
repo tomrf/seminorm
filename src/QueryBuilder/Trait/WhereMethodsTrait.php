@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tomrf\Seminorm\QueryBuilder;
+namespace Tomrf\Seminorm\QueryBuilder\Trait;
 
 trait WhereMethodsTrait
 {

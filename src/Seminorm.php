@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace Tomrf\Seminorm;
 
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Tomrf\Seminorm\Factory\Factory;
 use Tomrf\Seminorm\Interface\QueryBuilderInterface;
 use Tomrf\Seminorm\Pdo\PdoConnection;
 use Tomrf\Seminorm\Pdo\PdoQueryExecutor;
 use Tomrf\Seminorm\QueryBuilder\QueryBuilder;
 
-class Seminorm
+class Seminorm implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     public function __construct(
         protected PdoConnection $connection,
         protected Factory $queryBuilderFactory,
@@ -39,6 +43,10 @@ class Seminorm
         QueryBuilderInterface|string $query,
         array $parameters = []
     ): PdoQueryExecutor {
+        if (null !== $this->logger) {
+            $this->logger->info(sprintf('Seminorm SQL execute: "%s"', $query));
+        }
+
         return $this->queryExecutorFactory->make( // @phpstan-ignore-line
             $this->connection
         )->execute(

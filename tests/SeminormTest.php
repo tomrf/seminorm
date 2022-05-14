@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Tomrf\Seminorm\Data\Row;
 use Tomrf\Seminorm\Factory\Factory;
 use Tomrf\Seminorm\Pdo\PdoConnection;
@@ -124,5 +125,11 @@ final class SeminormTest extends TestCase
 
         static::assertArrayHasKey('number_of_rows', $row);
         static::assertSame($row['number_of_rows']->asInteger(), 252);
+    }
+
+    public function test_logger(): void
+    {
+        self::$seminorm->setLogger(new NullLogger());
+        static::assertTrue(true);
     }
 }

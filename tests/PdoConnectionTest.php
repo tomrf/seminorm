@@ -2,55 +2,71 @@
 
 declare(strict_types=1);
 
-use PHPUnit\Framework\TestCase;
-use Tomrf\Seminorm\Factory\Factory;
-use Tomrf\Seminorm\Pdo\PdoConnection;
-use Tomrf\Seminorm\Pdo\PdoQueryExecutor;
-use Tomrf\Seminorm\QueryBuilder\QueryBuilder;
+namespace Tomrf\Seminorm\Test;
+
+use PDO;
 use Tomrf\Seminorm\Seminorm;
 
 /**
  * @internal
- * @coversNothing
+ * @covers \Tomrf\Seminorm\Factory\Factory
+ * @covers \Tomrf\Seminorm\Pdo\PdoConnection
+ * @covers \Tomrf\Seminorm\Seminorm
  */
-final class PdoConnectionTest extends TestCase
+final class PdoConnectionTest extends AbstractTestCase
 {
     private static Seminorm $seminorm;
 
     public static function setUpBeforeClass(): void
     {
-        self::$seminorm = new Seminorm(
-            new PdoConnection(
-                PdoConnection::dsn('sqlite', ':memory:'),
-                null,
-                null,
-                null,
-            ),
-            new Factory(QueryBuilder::class),
-            new Factory(PdoQueryExecutor::class),
-        );
-        // self::$seminorm->getConnection()->connect();
+        //...
     }
 
-    public function test_not_connected_yet(): void
+    public function test_new_seminorm_is_instance_of_seminorm(): void
     {
-        static::assertFalse(self::$seminorm->getConnection()->isConnected());
+        static::assertInstanceOf(Seminorm::class, $this->newSeminormInstance());
     }
 
-    public function test_connect_after_create(): void
+    public function test_new_seminorm_not_connected(): void
     {
-        self::$seminorm->getConnection()->connect();
-        static::assertTrue(self::$seminorm->getConnection()->isConnected());
+        $seminorm = $this->newSeminormInstance(false);
+        static::assertFalse($seminorm->getConnection()->isConnected());
+    }
+
+    public function test_new_seminorm_is_connected(): void
+    {
+        $seminorm = $this->newSeminormInstance(true);
+        static::assertTrue($seminorm->getConnection()->isConnected());
     }
 
     public function test_get_pdo_object(): void
     {
-        static::assertInstanceOf(PDO::class, self::$seminorm->getConnection()->getPdo());
+        static::assertInstanceOf(PDO::class, $this->newSeminormInstance()->getConnection()->getPdo());
     }
 
     public function test_disconnect(): void
     {
-        self::$seminorm->getConnection()->disconnect();
-        static::assertFalse(self::$seminorm->getConnection()->isConnected());
+        $seminorm = $this->newSeminormInstance(true);
+        static::assertTrue($seminorm->getConnection()->isConnected());
+
+        $seminorm->getConnection()->disconnect();
+        static::assertFalse($seminorm->getConnection()->isConnected());
+    }
+
+    public function test_get_options(): void
+    {
+        static::assertIsArray($this->newSeminormInstance()->getConnection()->getOptions());
+    }
+
+    public function test_get_dsn(): void
+    {
+        static::assertIsString($this->newSeminormInstance()->getConnection()->getDsn());
+        static::assertStringContainsString('sqlite', $this->newSeminormInstance()->getConnection()->getDsn());
+        static::assertStringContainsString(':memory:', $this->newSeminormInstance()->getConnection()->getDsn());
+    }
+
+    public function test_get_username(): void
+    {
+        static::assertNull($this->newSeminormInstance()->getConnection()->getUsername());
     }
 }

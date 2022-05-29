@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
+namespace Tomrf\Seminorm\Test;
+
 use Psr\Log\AbstractLogger;
+use Stringable;
 
 class TestLogger extends AbstractLogger
 {

@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace Tomrf\Seminorm\Test;
+
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Tomrf\Seminorm\Data\Row;
@@ -13,7 +15,16 @@ use Tomrf\Seminorm\Seminorm;
 
 /**
  * @internal
- * @coversNothing
+ * @covers \Tomrf\Seminorm\Data\ImmutableArrayObject
+ * @covers \Tomrf\Seminorm\Data\NullValue
+ * @covers \Tomrf\Seminorm\Data\Row
+ * @covers \Tomrf\Seminorm\Data\Value
+ * @covers \Tomrf\Seminorm\Factory\Factory
+ * @covers \Tomrf\Seminorm\Pdo\PdoConnection
+ * @covers \Tomrf\Seminorm\Pdo\PdoQueryExecutor
+ * @covers \Tomrf\Seminorm\QueryBuilder\QueryBuilder
+ * @covers \Tomrf\Seminorm\Seminorm
+ * @covers \Tomrf\Seminorm\Sql\SqlCompiler
  */
 final class SeminormTest extends TestCase
 {
@@ -36,6 +47,15 @@ final class SeminormTest extends TestCase
 
         $sql = file_get_contents('tests/sql/countries_data.sql');
         self::$seminorm->execute($sql)->getRowCount();
+    }
+
+    public function test_constructor(): void
+    {
+        static::assertInstanceOf(Seminorm::class, new Seminorm(
+            new PdoConnection(PdoConnection::dsn('sqlite', ':memory:')),
+            new Factory(QueryBuilder::class),
+            new Factory(PdoQueryExecutor::class),
+        ));
     }
 
     public function test_connection_is_connected(): void

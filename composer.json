@@ -10,6 +10,11 @@
             "Tomrf\\Seminorm\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tomrf\\Seminorm\\Test\\": "tests/"
+        }
+    },
     "minimum-stability": "stable",
     "require": {
         "php": ">=8.0",
@@ -23,14 +28,14 @@
         "phpmd/phpmd": "^2.12"
     },
     "scripts": {
+        "phpunit": [
+            "phpunit -c .phpunit.dist.xml --colors=auto --coverage-text --stderr"
+        ],
         "cs-fixer": [
-            "php-cs-fixer fix --diff --verbose --allow-risky=yes"
+            "php-cs-fixer fix --allow-risky=yes --diff --verbose src/"
         ],
         "phpstan": [
             "phpstan analyze --level max src/"
-        ],
-        "phpunit": [
-            "phpunit"
         ],
         "phpmd": [
             "phpmd src/ ansi .phpmd-ruleset.xml"
@@ -39,6 +44,20 @@
             "@phpunit",
             "@phpmd",
             "@phpstan"
+        ],
+        "coverage": [
+            "@putenv XDEBUG_MODE=coverage",
+            "@phpunit --coverage-xml .phpunit.cache/code-coverage/xml",
+            "ls -al .phpunit.cache/code-coverage/xml"
+
+        ],
+        "coverage-html": [
+            "@putenv XDEBUG_MODE=coverage",
+            "@phpunit --coverage-html .phpunit.cache/code-coverage/html",
+            "php -S localhost:0 -t .phpunit.cache/code-coverage/html"
+        ],
+        "clean": [
+            "rm -rf vendor/ .phpunit.cache .php-cs-fixer.cache"
         ]
     }
 }

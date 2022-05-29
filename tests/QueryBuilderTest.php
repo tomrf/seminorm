@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace Tomrf\Seminorm\Test;
+
 use PHPUnit\Framework\TestCase;
 use Tomrf\Seminorm\Factory\Factory;
 use Tomrf\Seminorm\Pdo\PdoConnection;
@@ -11,7 +13,8 @@ use Tomrf\Seminorm\Seminorm;
 
 /**
  * @internal
- * @coversNothing
+ * @covers \Tomrf\Seminorm\QueryBuilder\QueryBuilder
+ * @covers \Tomrf\Seminorm\Sql\SqlCompiler
  */
 final class QueryBuilderTest extends TestCase
 {

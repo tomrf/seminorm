@@ -155,7 +155,7 @@ class PdoQueryExecutor implements QueryExecutorInterface
 
         foreach ($row as $key => $value) {
             if (null === $value) {
-                $values[(string) $key] = new NullValue();
+                $values[(string) $key] = new NullValue(null);
 
                 continue;
             }

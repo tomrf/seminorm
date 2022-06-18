@@ -130,7 +130,7 @@ final class SeminormTest extends TestCase
                 ->selectRaw('COUNT()', 'RANDOM()', '"string"')
         )->findOne();
 
-        static::assertSame($row['COUNT()']->asInteger(), 252);
+        static::assertSame($row['COUNT()']->asInt(), 252);
         static::assertSame($row['"string"']->asString(), 'string');
         static::assertArrayHasKey('RANDOM()', $row);
     }
@@ -144,7 +144,7 @@ final class SeminormTest extends TestCase
         )->findOne();
 
         static::assertArrayHasKey('number_of_rows', $row);
-        static::assertSame($row['number_of_rows']->asInteger(), 252);
+        static::assertSame($row['number_of_rows']->asInt(), 252);
     }
 
     public function test_logger(): void

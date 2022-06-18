@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace Tomrf\Seminorm\Data;
 
-class NullValue
+class NullValue extends Value
 {
-    public function isNull(): bool
-    {
-        return true;
-    }
 }

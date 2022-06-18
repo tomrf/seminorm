@@ -4,50 +4,29 @@ declare(strict_types=1);
 
 namespace Tomrf\Seminorm\Data;
 
-use Countable;
-use RuntimeException;
-use Serializable;
 use Stringable;
 
-class Value implements Stringable, Countable, Serializable
+class Value implements Stringable
 {
+    protected string $type;
+
     public function __construct(
-        protected string $data = ''
+        protected string|int|float|bool|null $data
     ) {
+        $this->type = \gettype($data);
     }
 
     public function __toString(): string
     {
-        return $this->data;
-    }
-
-    public function serialize(): string
-    {
-        return base64_encode($this->data);
-    }
-
-    public function unserialize(string $data): void
-    {
-        $string = base64_decode($data, true);
-        if (\is_bool($string)) {
-            throw new RuntimeException(
-                'Failed to unserialize Value data, base64_decode() returned false'
-            );
-        }
-        $this->data = $data;
-    }
-
-    public function count(): int
-    {
-        return mb_strlen($this->data);
+        return $this->asString();
     }
 
     public function asString(): string
     {
-        return $this->data;
+        return (string) $this->data;
     }
 
-    public function asInteger(): int
+    public function asInt(): int
     {
         return (int) $this->data;
     }
@@ -57,7 +36,7 @@ class Value implements Stringable, Countable, Serializable
         return (float) $this->data;
     }
 
-    public function asBoolean(): bool
+    public function asBool(): bool
     {
         return (bool) ($this->data);
     }
@@ -67,8 +46,28 @@ class Value implements Stringable, Countable, Serializable
         return is_numeric($this->data);
     }
 
+    public function isInt(): bool
+    {
+        return \is_int($this->data);
+    }
+
+    public function isString(): bool
+    {
+        return \is_string($this->data);
+    }
+
+    public function isBool(): bool
+    {
+        return \is_bool($this->data);
+    }
+
     public function isNull(): bool
     {
-        return false;
+        return null === $this->data;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
     }
 }

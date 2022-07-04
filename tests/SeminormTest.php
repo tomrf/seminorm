@@ -40,6 +40,7 @@ final class SeminormTest extends TestCase
             new Factory(QueryBuilder::class),
             new Factory(PdoQueryExecutor::class),
             Row::class,
+            Value::class,
         );
 
         self::$seminorm->getConnection()->connect();
@@ -162,6 +163,7 @@ final class SeminormTest extends TestCase
     public function test_logger(): void
     {
         self::$seminorm->setLogger(new NullLogger());
+        self::$seminorm->execute('SELECT 1');
         static::assertTrue(true);
     }
 }

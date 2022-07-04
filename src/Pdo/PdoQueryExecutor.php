@@ -19,6 +19,7 @@ class PdoQueryExecutor implements QueryExecutorInterface
     public function __construct(
         protected PdoConnection $connection,
         protected ?string $rowClass = null,
+        protected ?string $valueClass = null,
     ) {
     }
 
@@ -72,7 +73,7 @@ class PdoQueryExecutor implements QueryExecutorInterface
     /**
      * Fetch next row from the result set as Row.
      *
-     * @return null|array<null|string>|object
+     * @return null|array<null|object|string>|object
      */
     public function findOne(): null|array|object
     {
@@ -88,7 +89,7 @@ class PdoQueryExecutor implements QueryExecutorInterface
     /**
      * Fetch all rows from query result set.
      *
-     * @return array<int,array<null|string>|object>
+     * @return array<int,array<null|object|string>|object>
      */
     public function findMany(): array|object
     {
@@ -129,7 +130,7 @@ class PdoQueryExecutor implements QueryExecutorInterface
     /**
      * Fetch all rows in a result set as array of Row.
      *
-     * @return array<int,array<null|string>|object>
+     * @return array<int,array<null|object|string>|object>
      */
     protected function fetchAllRows(PDOStatement $statement): array
     {
@@ -147,7 +148,7 @@ class PdoQueryExecutor implements QueryExecutorInterface
     /**
      * Fetch next row from result set as Row.
      *
-     * @return array<null|string>|false|object
+     * @return array<null|object|string>|false|object
      */
     protected function fetchRow(PDOStatement $statement): array|object|false
     {
@@ -161,7 +162,12 @@ class PdoQueryExecutor implements QueryExecutorInterface
         $values = [];
 
         foreach ($row as $key => $value) {
-            $values[(string) $key] = $value;
+            if (null === $this->valueClass) {
+                $values[(string) $key] = $value;
+
+                continue;
+            }
+            $values[(string) $key] = new $this->valueClass($value);
         }
 
         if (null === $this->rowClass) {

@@ -21,6 +21,7 @@ class Seminorm implements LoggerAwareInterface
         protected Factory $queryBuilderFactory,
         protected Factory $queryExecutorFactory,
         protected ?string $rowClass = null,
+        protected ?string $valueClass = null,
     ) {
     }
 
@@ -50,7 +51,8 @@ class Seminorm implements LoggerAwareInterface
 
         return $this->queryExecutorFactory->make( // @phpstan-ignore-line
             $this->connection,
-            $this->rowClass
+            $this->rowClass,
+            $this->valueClass,
         )->execute(
             $query,
             $parameters,

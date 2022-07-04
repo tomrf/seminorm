@@ -49,6 +49,10 @@ class PdoQueryExecutor implements QueryExecutorInterface
         QueryBuilderInterface|string $query,
         array $parameters = []
     ): static {
+        if (true !== $this->connection->isConnected()) {
+            $this->connection->connect();
+        }
+
         if ($query instanceof QueryBuilderInterface) {
             $this->pdoStatement = $this->executeQuery(
                 $query->getQuery(),

@@ -11,6 +11,7 @@ use Tomrf\Seminorm\Interface\ConnectionInterface;
 class PdoConnection implements ConnectionInterface
 {
     protected ?PDO $pdo = null;
+    // protected string|PDO $dsnOrPdo;
 
     /**
      * @param PDO|string          $dsnOrPdo DSN string or an existing PDO object
@@ -25,6 +26,10 @@ class PdoConnection implements ConnectionInterface
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         ],
     ) {
+        if ($this->dsnOrPdo instanceof PDO) {
+            $this->pdo = $this->dsnOrPdo;
+            $this->options = null;
+        }
     }
 
     /**
@@ -56,9 +61,9 @@ class PdoConnection implements ConnectionInterface
     /**
      * Get the value of DSN.
      */
-    public function getDsn(): string
+    public function getDsn(): ?string
     {
-        return \is_string($this->dsnOrPdo) ? $this->dsnOrPdo : '';
+        return \is_string($this->dsnOrPdo) ? $this->dsnOrPdo : null;
     }
 
     /**
@@ -100,7 +105,7 @@ class PdoConnection implements ConnectionInterface
      */
     public function connect(): void
     {
-        if (null !== $this->pdo || \is_object($this->dsnOrPdo)) {
+        if (null !== $this->pdo || !\is_string($this->dsnOrPdo)) {
             return;
         }
 
@@ -117,7 +122,7 @@ class PdoConnection implements ConnectionInterface
             );
         }
 
-        // $this->password = null;
+        $this->password = '******';
     }
 
     /**
@@ -125,10 +130,6 @@ class PdoConnection implements ConnectionInterface
      */
     public function disconnect(): void
     {
-        if (null === $this->pdo) {
-            return;
-        }
-
         $this->pdo = null;
     }
 }

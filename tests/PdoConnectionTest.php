@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tomrf\Seminorm\Test;
 
 use PDO;
+use Tomrf\Seminorm\Factory\Factory;
+use Tomrf\Seminorm\Pdo\PdoConnection;
 use Tomrf\Seminorm\Seminorm;
 
 /**
@@ -15,8 +17,6 @@ use Tomrf\Seminorm\Seminorm;
  */
 final class PdoConnectionTest extends AbstractTestCase
 {
-    private static Seminorm $seminorm;
-
     public static function setUpBeforeClass(): void
     {
         //...
@@ -42,6 +42,18 @@ final class PdoConnectionTest extends AbstractTestCase
     public function test_get_pdo_object(): void
     {
         static::assertInstanceOf(PDO::class, $this->newSeminormInstance()->getConnection()->getPdo());
+    }
+
+    public function test_new_pdoconnection_from_pdo_instance(): void
+    {
+        $pdo = new PDO('sqlite::memory:');
+        $seminorm = new Seminorm(
+            new PdoConnection($pdo),
+            new Factory(QueryBuilder::class),
+            new Factory(PdoQueryExecutor::class),
+        );
+        static::assertInstanceOf(PDO::class, $seminorm->getConnection()->getPdo());
+        static::assertSame($pdo, $seminorm->getConnection()->getPdo());
     }
 
     public function test_disconnect(): void

@@ -8,9 +8,7 @@ use PDO;
 use PDOException;
 use PDOStatement;
 use RuntimeException;
-use Tomrf\Seminorm\Data\NullValue;
 use Tomrf\Seminorm\Data\Row;
-use Tomrf\Seminorm\Data\Value;
 use Tomrf\Seminorm\Interface\QueryBuilderInterface;
 use Tomrf\Seminorm\Interface\QueryExecutorInterface;
 
@@ -19,7 +17,8 @@ class PdoQueryExecutor implements QueryExecutorInterface
     protected PDOStatement $pdoStatement;
 
     public function __construct(
-        protected PdoConnection $connection
+        protected PdoConnection $connection,
+        protected ?string $rowClass = null,
     ) {
     }
 
@@ -72,8 +71,10 @@ class PdoQueryExecutor implements QueryExecutorInterface
 
     /**
      * Fetch next row from the result set as Row.
+     *
+     * @return null|array<null|string>|object
      */
-    public function findOne(): ?Row
+    public function findOne(): null|array|object
     {
         $row = $this->fetchRow($this->pdoStatement);
 
@@ -87,9 +88,9 @@ class PdoQueryExecutor implements QueryExecutorInterface
     /**
      * Fetch all rows from query result set.
      *
-     * @return array<int,Row>
+     * @return array<int,array<null|string>|object>
      */
-    public function findMany(): array
+    public function findMany(): array|object
     {
         return $this->fetchAllRows($this->pdoStatement);
     }
@@ -128,7 +129,7 @@ class PdoQueryExecutor implements QueryExecutorInterface
     /**
      * Fetch all rows in a result set as array of Row.
      *
-     * @return array<int,Row>
+     * @return array<int,array<null|string>|object>
      */
     protected function fetchAllRows(PDOStatement $statement): array
     {
@@ -145,8 +146,10 @@ class PdoQueryExecutor implements QueryExecutorInterface
 
     /**
      * Fetch next row from result set as Row.
+     *
+     * @return array<null|string>|false|object
      */
-    protected function fetchRow(PDOStatement $statement): Row|false
+    protected function fetchRow(PDOStatement $statement): array|object|false
     {
         /** @var array<string,null|string>|bool */
         $row = $statement->fetch(PDO::FETCH_ASSOC);
@@ -158,14 +161,13 @@ class PdoQueryExecutor implements QueryExecutorInterface
         $values = [];
 
         foreach ($row as $key => $value) {
-            if (null === $value) {
-                $values[(string) $key] = new NullValue(null);
-
-                continue;
-            }
-            $values[(string) $key] = new Value($value);
+            $values[(string) $key] = $value;
         }
 
-        return new Row($values);
+        if (null === $this->rowClass) {
+            return $values;
+        }
+
+        return new $this->rowClass($values);
     }
 }

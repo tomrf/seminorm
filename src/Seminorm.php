@@ -20,6 +20,7 @@ class Seminorm implements LoggerAwareInterface
         protected PdoConnection $connection,
         protected Factory $queryBuilderFactory,
         protected Factory $queryExecutorFactory,
+        protected ?string $rowClass = null,
     ) {
     }
 
@@ -48,7 +49,8 @@ class Seminorm implements LoggerAwareInterface
         }
 
         return $this->queryExecutorFactory->make( // @phpstan-ignore-line
-            $this->connection
+            $this->connection,
+            $this->rowClass
         )->execute(
             $query,
             $parameters,

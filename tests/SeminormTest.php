@@ -7,6 +7,7 @@ namespace Tomrf\Seminorm\Test;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Tomrf\Seminorm\Data\Row;
+use Tomrf\Seminorm\Data\Value;
 use Tomrf\Seminorm\Factory\Factory;
 use Tomrf\Seminorm\Pdo\PdoConnection;
 use Tomrf\Seminorm\Pdo\PdoQueryExecutor;
@@ -38,6 +39,7 @@ final class SeminormTest extends TestCase
             ),
             new Factory(QueryBuilder::class),
             new Factory(PdoQueryExecutor::class),
+            Row::class,
         );
 
         self::$seminorm->getConnection()->connect();
@@ -130,8 +132,14 @@ final class SeminormTest extends TestCase
                 ->selectRaw('COUNT()', 'RANDOM()', '"string"')
         )->findOne();
 
-        static::assertSame($row['COUNT()']->asInt(), 252);
-        static::assertSame($row['"string"']->asString(), 'string');
+        if ($row['COUNT()'] instanceof Value) {
+            static::assertSame($row['COUNT()']->asInt(), 252);
+            static::assertSame($row['"string"']->asString(), 'string');
+        } else {
+            static::assertSame($row['COUNT()'], '252');
+            static::assertSame($row['"string"'], 'string');
+        }
+
         static::assertArrayHasKey('RANDOM()', $row);
     }
 
@@ -144,7 +152,11 @@ final class SeminormTest extends TestCase
         )->findOne();
 
         static::assertArrayHasKey('number_of_rows', $row);
-        static::assertSame($row['number_of_rows']->asInt(), 252);
+        if ($row['number_of_rows'] instanceof Value) {
+            static::assertSame($row['number_of_rows']->asInt(), 252);
+        } else {
+            static::assertSame($row['number_of_rows'], '252');
+        }
     }
 
     public function test_logger(): void

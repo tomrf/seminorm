@@ -86,10 +86,13 @@ class SqlCompiler
 
     protected function compileClauseJoin(): string
     {
+        $joinClause = null;
+
         foreach ($this->join as $join) {
             $joinClause = sprintf(
-                '%s JOIN %s ON %s',
+                '%s %sJOIN %s ON %s',
                 $joinClause ?? '',
+                $join['type'] ? sprintf('%s ', strtoupper((string)$join['type'])) : '',
                 $this->quoteExpression((string) $join['table']),
                 $this->quoteExpression((string) $join['condition'])
             );

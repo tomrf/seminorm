@@ -139,4 +139,33 @@ final class QueryBuilderTest extends TestCase
             $queryBuilder->getQueryParameters()
         );
     }
+
+    public function test_querybuilder_sql_statement_syntax__joins(): void
+    {
+        $queryBuilder = new QueryBuilder();
+        $queryBuilder = $queryBuilder
+            ->selectFrom('table')
+            ->join('table2', 'table.table2_id = table2.id')
+            ->join('table3', 'table.table3_id = table3.id', 'LEFT')
+            ->join('table4', 'table.table4_id = table4.id', 'right')
+            ->join('table5', 'table.table5_id = table5.id', 'INNER LEFT')
+            ->join('table6', 'table.table6_id = table6.id', 'INNER RIGHT')
+            ->join('table7', 'table.table7_id = table7.id', 'CROSS')
+        ;
+
+        static::assertSame(
+            'SELECT `table`.* FROM `table` JOIN `table2` ON `table`.`table2_id`=`table2`.`id` LEFT JOIN `table3` ON `table`.`table3_id`=`table3`.`id` RIGHT JOIN `table4` ON `table`.`table4_id`=`table4`.`id` INNER LEFT JOIN `table5` ON `table`.`table5_id`=`table5`.`id` INNER RIGHT JOIN `table6` ON `table`.`table6_id`=`table6`.`id` CROSS JOIN `table7` ON `table`.`table7_id`=`table7`.`id`',
+            $queryBuilder->getQuery()
+        );
+
+        static::assertSame(
+            [],
+            $queryBuilder->getQueryParameters()
+        );
+
+
+
+
+    }
+
 }

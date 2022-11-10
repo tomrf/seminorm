@@ -22,26 +22,48 @@ class QueryBuilder extends SqlCompiler implements QueryBuilderInterface
         return $this->getQuery();
     }
 
-    public function selectFrom(string $table): static
+    public function selectFrom(string $table, string ...$columns): static
     {
         $this->setTable($table);
         $this->setStatement('SELECT');
 
+        foreach ($columns as $column) {
+            $this->select($column);
+        }
+
         return $this;
     }
 
-    public function insertInto(string $table): static
+    /**
+     * @param array<string,int|string|float|null $values
+     *
+     * @throws InvalidArgumentException
+     */
+    public function insertInto(string $table, array $values = []): static
     {
         $this->setTable($table);
         $this->setStatement('INSERT INTO');
 
+        if (!empty($values)) {
+            $this->setFromArray($values);
+        }
+
         return $this;
     }
 
-    public function update(string $table): static
+    /**
+     * @param array<string,int|string|float|null $values
+     *
+     * @throws InvalidArgumentException
+     */
+    public function update(string $table, array $values = []): static
     {
         $this->setTable($table);
         $this->setStatement('UPDATE');
+
+        if (!empty($values)) {
+            $this->setFromArray($values);
+        }
 
         return $this;
     }
@@ -78,6 +100,32 @@ class QueryBuilder extends SqlCompiler implements QueryBuilderInterface
         return $this;
     }
 
+    /**
+     * @param array<string, null|float|int|string> $values
+     *
+     * @throws InvalidArgumentException
+     */
+    public function setFromArray(array $values): static
+    {
+        foreach ($values as $column => $value) {
+            if (!\is_string($column)) {
+                throw new InvalidArgumentException(
+                    'Column name (array key) must be string, got '.\gettype($column)
+                );
+            }
+
+            if (null === $value) {
+                $this->setRaw($column, 'NULL');
+
+                continue;
+            }
+
+            $this->set($column, $value);
+        }
+
+        return $this;
+    }
+
     public function alias(string $expression, string $alias): static
     {
         foreach ($this->select as $i => $select) {
@@ -89,11 +137,12 @@ class QueryBuilder extends SqlCompiler implements QueryBuilderInterface
         return $this;
     }
 
-    public function join(string $table, string $joinCondition): static
+    public function join(string $table, string $joinCondition, string $joinType = null): static
     {
         $this->join[] = [
             'table' => trim($table),
             'condition' => trim($joinCondition),
+            'type' => $joinType,
         ];
 
         return $this;

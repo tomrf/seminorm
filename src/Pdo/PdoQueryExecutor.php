@@ -146,7 +146,7 @@ class PdoQueryExecutor implements QueryExecutorInterface
     }
 
     /**
-     * Fetch next row from result set as Row.
+     * Fetch next row from result set as array/rowClass of values/valueClass.
      *
      * @return array<null|object|string>|false|object
      */
@@ -167,6 +167,7 @@ class PdoQueryExecutor implements QueryExecutorInterface
 
                 continue;
             }
+
             $values[(string) $key] = new $this->valueClass($value);
         }
 

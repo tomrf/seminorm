@@ -35,7 +35,10 @@ class QueryBuilder extends SqlCompiler implements QueryBuilderInterface
     }
 
     /**
-     * @param array<string,int|string|float|null $values
+     * Insert a row into a table
+     *
+     * @param string $table
+     * @param array<string,int|string|float|null> $values
      *
      * @throws InvalidArgumentException
      */
@@ -52,7 +55,7 @@ class QueryBuilder extends SqlCompiler implements QueryBuilderInterface
     }
 
     /**
-     * @param array<string,int|string|float|null $values
+     * @param array<string,int|string|float|null> $values
      *
      * @throws InvalidArgumentException
      */

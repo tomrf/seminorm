@@ -11,7 +11,6 @@ use Tomrf\Seminorm\Interface\ConnectionInterface;
 class PdoConnection implements ConnectionInterface
 {
     protected ?PDO $pdo = null;
-    // protected string|PDO $dsnOrPdo;
 
     /**
      * @param PDO|string          $dsnOrPdo DSN string or an existing PDO object
@@ -131,5 +130,20 @@ class PdoConnection implements ConnectionInterface
     public function disconnect(): void
     {
         $this->pdo = null;
+    }
+
+    /**
+     * Mask password when dumping.
+     *
+     * @return array<string, string|null|array<int,int>>
+     */
+    public function __debugInfo(): array
+    {
+        return [
+            'dsn' => $this->getDsn(),
+            'username' => $this->getUsername(),
+            'password' => '******',
+            'options' => $this->getOptions(),
+        ];
     }
 }

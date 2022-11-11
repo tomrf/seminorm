@@ -5,6 +5,13 @@
     "homepage": "http://github.com/tomrf/seminorm",
     "type": "library",
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Tom Rune Flo",
+            "email": "tom@x86.no",
+            "homepage": "http://github.com/tomrf/"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "Tomrf\\Seminorm\\": "src/"
@@ -27,6 +34,43 @@
         "roave/security-advisories": "dev-latest",
         "phpmd/phpmd": "^2.12",
         "tomrf/readme-gen": "*"
+    },
+    "extra": {
+        "intro": [
+            "PHP SQL query builder and executor, using PDO."
+        ],
+        "example": [
+            "$db = new \\Tomrf\\Seminorm\\Seminorm(",
+            "   new PdoConnection(",
+            "       PdoConnection::dsn(",
+            "           'mysql',",
+            "           'my_database',",
+            "           'localhost',",
+            "       ),",
+            "       'username',",
+            "       'password',",
+            "       []           // array of PDO options, ATTR_PERSISTENT, ATTR_ERRMODE etc..",
+            "   ),",
+            "   new Factory(QueryBuilder::class),",
+            "   new Factory(PdoQueryExecutor::class),",
+            "   null,            // optional row class, defaults to array",
+            "   null,            // optional data value class, defaults to string",
+            ");",
+            "",
+            "$rows = $db->execute(",
+            "    'SELECT * FROM `my_table` WHERE id = :id',",
+            "    [ 'id' => 1 ]",
+            ")->findMany();",
+            "",
+            "$rowId = $db->execute(",
+            "    $db->query()->insertInto(",
+            "       'my_table', ",
+            "       [ 'name' => 'My Name', 'email' => 'mail@example.com' ]",
+            "    )",
+            ")->getLastInsertId();",
+            "",
+            "..."
+        ]
     },
     "scripts": {
         "phpunit": [

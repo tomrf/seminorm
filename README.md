@@ -2,7 +2,7 @@
 
 [![PHP Version Require](http://poser.pugx.org/tomrf/seminorm/require/php?style=flat-square)](https://packagist.org/packages/tomrf/seminorm) [![Latest Stable Version](http://poser.pugx.org/tomrf/seminorm/v?style=flat-square)](https://packagist.org/packages/tomrf/seminorm) [![License](http://poser.pugx.org/tomrf/seminorm/license?style=flat-square)](https://packagist.org/packages/tomrf/seminorm)
 
-:package_extra_intro
+PHP SQL query builder and executor, using PDO.
 
 📔 [Go to documentation](#documentation)
 
@@ -15,7 +15,36 @@ composer require tomrf/seminorm
 
 ## Usage
 ```php
-:package_extra_example
+$db = new \Tomrf\Seminorm\Seminorm(
+   new PdoConnection(
+       PdoConnection::dsn(
+           'mysql',
+           'my_database',
+           'localhost',
+       ),
+       'username',
+       'password',
+       []           // array of PDO options, ATTR_PERSISTENT, ATTR_ERRMODE etc..
+   ),
+   new Factory(QueryBuilder::class),
+   new Factory(PdoQueryExecutor::class),
+   null,            // optional row class, defaults to array
+   null,            // optional data value class, defaults to string
+);
+
+$rows = $db->execute(
+    'SELECT * FROM `my_table` WHERE id = :id',
+    [ 'id' => 1 ]
+)->findMany();
+
+$rowId = $db->execute(
+    $db->query()->insertInto(
+       'my_table', 
+       [ 'name' => 'My Name', 'email' => 'mail@example.com' ]
+    )
+)->getLastInsertId();
+
+...
 ```
 
 ## Testing
@@ -1174,4 +1203,4 @@ public function getQueryParameters(): array
 
 ***
 
-_Generated 2022-11-11T01:11:25+01:00 using 📚[tomrf/readme-gen](https://packagist.org/packages/tomrf/readme-gen)_
+_Generated 2022-11-11T01:32:36+01:00 using 📚[tomrf/readme-gen](https://packagist.org/packages/tomrf/readme-gen)_

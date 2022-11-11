@@ -25,7 +25,8 @@
         "phpstan/phpstan": "^1.8",
         "friendsofphp/php-cs-fixer": "^3.8",
         "roave/security-advisories": "dev-latest",
-        "phpmd/phpmd": "^2.12"
+        "phpmd/phpmd": "^2.12",
+        "tomrf/readme-gen": "*"
     },
     "scripts": {
         "phpunit": [

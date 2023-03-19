@@ -42,4 +42,21 @@ abstract class AbstractTestCase extends TestCase
 
         return $seminorm;
     }
+
+    protected function assertArrayHasValues(array $expected, array $actual): void
+    {
+        $notFound = $expected;
+
+        foreach ($actual as $actualValue) {
+            foreach ($expected as $expectedKey => $expectedValue) {
+                if ($expectedValue === $actualValue) {
+                    unset($notFound[$expectedKey]);
+                }
+            }
+        }
+
+        if (0 !== count($notFound)) {
+            $this->fail(sprintf('The following values were not found in array: %s', implode(', ', $notFound)));
+        }
+    }
 }

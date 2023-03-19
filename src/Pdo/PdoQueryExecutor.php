@@ -97,12 +97,100 @@ class PdoQueryExecutor implements QueryExecutorInterface
     }
 
     /**
+     * Return the named column of the first row in the result set, or the first column
+     * of the first row if no column name is specified.
+     *
+     * @throws RuntimeException if the query does not return a column
+     */
+    public function getColumn($column = null): string|int|float
+    {
+        $row = $this->findOne();
+
+        if (null === $row) {
+            throw new RuntimeException('Query did not return a column');
+        }
+
+        if (null === $column) {
+            return array_values($row)[0];
+        }
+
+        if (!array_key_exists($column, $row)) {
+            throw new RuntimeException(
+                sprintf(
+                    'Query did not return a column named "%s"',
+                    $column
+                )
+            );
+        }
+
+        return $row[$column];
+    }
+
+    /**
+     * Return the named column of all rows in the result set, or the first column
+     * of all rows if no column name is specified.
+     *
+     * @throws RuntimeException if the query does not return a column
+     */
+    public function getColumns($column = null): array
+    {
+        $rows = $this->findMany();
+
+        if (null === $column) {
+            return array_map(
+                fn (array $row) => array_values($row)[0],
+                $rows
+            );
+        }
+
+        return array_map(
+            fn (array $row) => $row[$column],
+            $rows
+        );
+    }
+
+    /**
+     * Return the first row of the result set as an array.
+     *
+     * @throws RuntimeException if the query does not return a row
+     * @return array<string|int|float>
+     */
+
+    public function getRow(): array
+    {
+        $row = $this->findOne();
+
+        if (null === $row) {
+            throw new RuntimeException('Query did not return a row');
+        }
+
+        return $row;
+    }
+
+    /**
+     * Return all rows of the result set as an array of arrays.
+     *
+     * @throws RuntimeException if the query does not return at least one row
+     * @return array<int,array<string|int|float>>
+     */
+    public function getRows(): array
+    {
+        $rows = $this->findMany();
+
+        if (0 === count($rows)) {
+            throw new RuntimeException('Query did not return any rows');
+        }
+
+        return $rows;
+    }
+
+    /**
      * Prepare and execute PDOStatement from query string and array of
      * parameters.
      *
      * @param array<int|string,mixed> $queryParameters
      *
-     * @throws PDOException
+     * @throws RuntimeException
      */
     protected function executeQuery(string $query, array $queryParameters): PDOStatement
     {
@@ -121,6 +209,9 @@ class PdoQueryExecutor implements QueryExecutorInterface
                 'Could not get prepared statement, connection error?'
             );
         }
+
+        // remove named keys from parameters array
+        $queryParameters = array_values($queryParameters);
 
         $statement->execute($queryParameters);
 

@@ -17,7 +17,6 @@ use Tomrf\Seminorm\Seminorm;
 /**
  * @internal
  * @covers \Tomrf\Seminorm\Data\ImmutableArrayObject
- * @covers \Tomrf\Seminorm\Data\NullValue
  * @covers \Tomrf\Seminorm\Data\Row
  * @covers \Tomrf\Seminorm\Data\Value
  * @covers \Tomrf\Seminorm\Factory\Factory

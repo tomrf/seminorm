@@ -19,12 +19,12 @@ trait SelectMethodsTrait
         return $this;
     }
 
-    public function selectAs(string $expression, string $alias): static
+    public function selectAs(string $column, string $alias): static
     {
         $this->setStatement('SELECT');
 
         $this->select[] = [
-            'expression' => $this->quoteExpression(trim($expression)),
+            'expression' => $this->quoteExpression(trim($column)),
             'alias' => $this->quoteString(trim($alias)),
         ];
 

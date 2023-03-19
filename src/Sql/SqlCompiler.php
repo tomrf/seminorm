@@ -78,7 +78,11 @@ class SqlCompiler
     protected function compileClauseSelect(): string
     {
         if (0 === \count($this->select)) {
-            return sprintf('%s.*', $this->quoteExpression($this->table));
+            return sprintf(
+                '%s.*%s',
+                $this->quoteExpression($this->table),
+                ($this->table !== '') ? ' FROM' : '',
+            );
         }
 
         foreach ($this->select as $key => $select) {
@@ -89,6 +93,10 @@ class SqlCompiler
                 isset($select['alias']) ? (' AS '.$select['alias']) : '',
                 ($key !== array_key_last($this->select)) ? ', ' : '',
             );
+        }
+
+        if ($this->table !== '') {
+            $selectExpression .= ' FROM';
         }
 
         return $selectExpression;
@@ -317,8 +325,8 @@ class SqlCompiler
             'INSERT INTO' => 'INSERT INTO {table}{insert}{onDuplicateKey}',
             'UPDATE' => 'UPDATE {table} SET {set}{where}{orderBy}{limit}',
             'DELETE FROM' => 'DELETE FROM {table}{where}{orderBy}{limit}',
-            'SELECT' => 'SELECT {select} FROM {table}{join}{where}{groupBy}{having}{orderBy}{limit}',
-            'SELECT DISTINCT' => 'SELECT DISTINCT {select} FROM {table}{join}{where}{groupBy}{having}{orderBy}{limit}',
+            'SELECT' => 'SELECT {select} {table}{join}{where}{groupBy}{having}{orderBy}{limit}',
+            'SELECT DISTINCT' => 'SELECT DISTINCT {select} {table}{join}{where}{groupBy}{having}{orderBy}{limit}',
             default => null
         };
 

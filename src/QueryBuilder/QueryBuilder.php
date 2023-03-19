@@ -13,6 +13,7 @@ class QueryBuilder extends SqlCompiler implements QueryBuilderInterface
     use Trait\OrderByMethodsTrait;
     use Trait\SelectMethodsTrait;
     use Trait\WhereMethodsTrait;
+    use Trait\GroupHavingMethodsTrait;
 
     protected string $table = '';
     protected string $statement = '';
@@ -84,6 +85,7 @@ class QueryBuilder extends SqlCompiler implements QueryBuilderInterface
         $key = trim($column);
 
         $this->set[$key] = [
+            'column' => $key,
             'value' => $value,
             'raw' => false,
         ];
@@ -96,6 +98,7 @@ class QueryBuilder extends SqlCompiler implements QueryBuilderInterface
         $key = trim($column);
 
         $this->set[$key] = [
+            'column' => $key,
             'value' => $expression,
             'raw' => true,
         ];

@@ -27,7 +27,7 @@ class SqlCompiler
     protected array $join = [];
 
     /**
-     * @var array<array<null|bool|float|int|string>>
+     * @var array<array<null|bool|float|int|string|array<mixed>>>
      */
     protected array $where = [];
 
@@ -39,10 +39,20 @@ class SqlCompiler
     /**
      * @var array<array<null|bool|float|int|string>>
      */
+    protected array $group = [];
+
+    /**
+     * @var array<int,string,float,bool>
+     */
+    protected array $having = [];
+
+    /**
+     * @var array<array<null|bool|float|int|string>>
+     */
     protected array $set = [];
 
     /**
-     * @var array<int|string,null|bool|float|int|string>
+     * @var array<int|string,mixed>
      */
     protected array $queryParameters = [];
 
@@ -176,17 +186,49 @@ class SqlCompiler
 
         foreach ($this->where as $key => $where) {
             $whereCondition .= $where['condition'];
+            $column = $where['column'] ?? null;
 
             if (array_key_last($this->where) !== $key) {
                 $whereCondition .= ' AND ';
             }
 
-            if (isset($where['value'])) {
-                $this->queryParameters[] = $where['value'];
+            if (!isset($where['value'])) {
+                continue;
             }
+
+            if (\is_array($where['value'])) {
+                foreach ($where['value'] as $value) {
+                    $keyName = $this->findNextQueryParameterKey($column);
+                    $this->queryParameters[$keyName] = $value;
+                }
+
+                continue;
+            }
+
+            $this->queryParameters[
+                $this->findNextQueryParameterKey($column)
+            ] = $where['value'];
         }
 
         return $whereCondition;
+    }
+
+    protected function compileClauseGroupBy(): string
+    {
+        if (0 === \count($this->group)) {
+            return '';
+        }
+
+        $groupByClause = ' GROUP BY ';
+        foreach ($this->group as $key => $groupBy) {
+            $groupByClause .= sprintf(
+                '%s%s',
+                $this->quoteExpression((string) $groupBy),
+                ($key !== array_key_last($this->group)) ? ', ' : ''
+            );
+        }
+
+        return $groupByClause;
     }
 
     protected function compileClauseOrderBy(): string
@@ -206,6 +248,42 @@ class SqlCompiler
         }
 
         return $orderByClause;
+    }
+
+    protected function compileClauseHaving(): string
+    {
+        if (0 === \count($this->having)) {
+            return '';
+        }
+
+        $havingClause = ' HAVING ';
+        foreach ($this->having as $key => $having) {
+            $havingClause .= $having['condition'];
+            $column = $having['column'] ?? null;
+
+            if (array_key_last($this->having) !== $key) {
+                $havingClause .= ' AND ';
+            }
+
+            if (!isset($having['value'])) {
+                continue;
+            }
+
+            if (\is_array($having['value'])) {
+                foreach ($having['value'] as $value) {
+                    $keyName = $this->findNextQueryParameterKey($column);
+                    $this->queryParameters[$keyName] = $value;
+                }
+
+                continue;
+            }
+
+            $this->queryParameters[
+                $this->findNextQueryParameterKey($column)
+            ] = $having['value'];
+        }
+
+        return $havingClause;
     }
 
     protected function compileClauseLimit(): string
@@ -239,7 +317,8 @@ class SqlCompiler
             'INSERT INTO' => 'INSERT INTO {table}{insert}{onDuplicateKey}',
             'UPDATE' => 'UPDATE {table} SET {set}{where}{orderBy}{limit}',
             'DELETE FROM' => 'DELETE FROM {table}{where}{orderBy}{limit}',
-            'SELECT' => 'SELECT {select} FROM {table}{join}{where}{orderBy}{limit}',
+            'SELECT' => 'SELECT {select} FROM {table}{join}{where}{groupBy}{having}{orderBy}{limit}',
+            'SELECT DISTINCT' => 'SELECT DISTINCT {select} FROM {table}{join}{where}{groupBy}{having}{orderBy}{limit}',
             default => null
         };
 
@@ -312,5 +391,21 @@ class SqlCompiler
     protected function isValidColumnName(string $name): bool
     {
         return (bool) (preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $name));
+    }
+
+    protected function findNextQueryParameterKey(string $name = null): string
+    {
+        if (null === $name) {
+            $name = 'param';
+        }
+
+        $key = $name;
+        $index = 1;
+        while (array_key_exists($key, $this->queryParameters)) {
+            $key = sprintf('%s_%d', $name, $index);
+            ++$index;
+        }
+
+        return $key;
     }
 }

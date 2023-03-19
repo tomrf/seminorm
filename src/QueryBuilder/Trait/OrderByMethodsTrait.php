@@ -25,4 +25,23 @@ trait OrderByMethodsTrait
 
         return $this;
     }
+
+    public function orderByRaw(string $expression): static
+    {
+        $this->order[] = [
+            'expression' => trim($expression),
+        ];
+
+        return $this;
+    }
+
+    public function orderByRandom(): static
+    {
+        return $this->orderByRaw('RANDOM()');
+    }
+
+    public function orderByRandomSeed(int $seed): static
+    {
+        return $this->orderByRaw(sprintf('RANDOM(%d)', $seed));
+    }
 }

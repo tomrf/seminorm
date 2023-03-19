@@ -10,6 +10,7 @@ trait WhereMethodsTrait
     {
         $this->where[] = [
             'value' => $value,
+            'column' => $column,
             'condition' => sprintf(
                 '%s %s ?',
                 $this->quoteExpression(trim($column)),
@@ -59,5 +60,79 @@ trait WhereMethodsTrait
     public function whereNotNull(string $column): static
     {
         return $this->whereColumnRaw($column, 'IS NOT NULL');
+    }
+
+    /**
+     * @param array<int,int|float|string> $values
+     */
+    public function whereIn(string $column, array $values): static
+    {
+        $this->where[] = [
+            'value' => $values,
+            'column' => $column,
+            'condition' => sprintf(
+                '%s IN (%s)',
+                $this->quoteExpression(trim($column)),
+                implode(', ', array_fill(0, count($values), '?')),
+            ),
+        ];
+
+        return $this;
+    }
+
+    /**
+     * @param array<int,int|float|string> $values
+     */
+    public function whereNotIn(string $column, array $values): static
+    {
+        $this->where[] = [
+            'value' => $values,
+            'column' => $column,
+            'condition' => sprintf(
+                '%s NOT IN (%s)',
+                $this->quoteExpression(trim($column)),
+                implode(', ', array_fill(0, count($values), '?')),
+            ),
+        ];
+
+        return $this;
+    }
+
+    public function whereLike(string $column, string $value): static
+    {
+        return $this->where($column, 'LIKE', $value);
+    }
+
+    public function whereNotLike(string $column, string $value): static
+    {
+        return $this->where($column, 'NOT LIKE', $value);
+    }
+
+    public function whereBetween(string $column, int|float|string $value1, int|float|string $value2): static
+    {
+        $this->where[] = [
+            'value' => [$value1, $value2],
+            'column' => $column,
+            'condition' => sprintf(
+                '%s BETWEEN ? AND ?',
+                $this->quoteExpression(trim($column)),
+            ),
+        ];
+
+        return $this;
+    }
+
+    public function whereNotBetween(string $column, int|float|string $value1, int|float|string $value2): static
+    {
+        $this->where[] = [
+            'value' => [$value1, $value2],
+            'column' => $column,
+            'condition' => sprintf(
+                '%s NOT BETWEEN ? AND ?',
+                $this->quoteExpression(trim($column)),
+            ),
+        ];
+
+        return $this;
     }
 }

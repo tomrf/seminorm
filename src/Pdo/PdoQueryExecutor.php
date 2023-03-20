@@ -102,19 +102,20 @@ class PdoQueryExecutor implements QueryExecutorInterface
      *
      * @throws RuntimeException if the query does not return a column
      */
-    public function getColumn($column = null): string|int|float
+    public function getColumn(string $column = null): string|int|float
     {
+        /** @var array<string|int|float>|null */
         $row = $this->findOne();
 
         if (null === $row) {
             throw new RuntimeException('Query did not return a column');
         }
 
-        if (null === $column) {
+        if (null === $column && is_array($row)) {
             return array_values($row)[0];
         }
 
-        if (!array_key_exists($column, $row)) {
+        if ($column !== null && !array_key_exists($column, $row)) {
             throw new RuntimeException(
                 sprintf(
                     'Query did not return a column named "%s"',
@@ -131,16 +132,24 @@ class PdoQueryExecutor implements QueryExecutorInterface
      * of all rows if no column name is specified.
      *
      * @throws RuntimeException if the query does not return a column
+     *
+     * @return array<int,string|int|float>
      */
-    public function getColumns($column = null): array
+    public function getColumns(string $column = null): array
     {
         $rows = $this->findMany();
 
-        if (null === $column) {
+        if (null === $column && is_array($rows)) {
             return array_map(
-                fn (array $row) => array_values($row)[0],
+                function (array $row): mixed {
+                    return array_values($row)[0];
+                },
                 $rows
             );
+        }
+
+        if (!\is_array($rows)) {
+            throw new RuntimeException('Query did not return any rows');
         }
 
         return array_map(

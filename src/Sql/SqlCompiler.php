@@ -37,17 +37,17 @@ class SqlCompiler
     protected array $order = [];
 
     /**
-     * @var array<array<null|bool|float|int|string>>
+     * @var array<array<mixed>>
      */
     protected array $group = [];
 
     /**
-     * @var array<int,string,float,bool>
+     * @var array<array<mixed>>
      */
     protected array $having = [];
 
     /**
-     * @var array<array<null|bool|float|int|string>>
+     * @var array<array<mixed>>
      */
     protected array $set = [];
 

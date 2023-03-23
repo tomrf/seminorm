@@ -1,15 +1,8 @@
 <?php
 
-namespace Tomrf\Seminorm\QueryBuilder\Trait;
+namespace Tomrf\Seminorm\QueryBuilder\Trait\Clause;
 
-trait GroupHavingMethodsTrait {
-    public function groupBy(string $column): static
-    {
-        $this->group[] = trim($column);
-
-        return $this;
-    }
-
+trait HavingTrait {
     public function havingRaw(string $expression): static
     {
         $this->having[] = [
@@ -29,9 +22,4 @@ trait GroupHavingMethodsTrait {
         ];
         return $this;
     }
-
-
-
-
-
 }

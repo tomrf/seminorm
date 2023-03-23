@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Tomrf\Seminorm\QueryBuilder\Trait;
+namespace Tomrf\Seminorm\QueryBuilder\Trait\Clause;
 
-trait OrderByMethodsTrait
+trait OrderByTrait
 {
     public function orderByAsc(string $column): static
     {

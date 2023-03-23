@@ -2,10 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Tomrf\Seminorm\QueryBuilder\Trait;
+namespace Tomrf\Seminorm\QueryBuilder\Trait\Statement;
 
-trait SelectMethodsTrait
+trait SelectTrait
 {
+    public function selectFrom(string $table, string ...$columns): static
+    {
+        $this->setTable($table);
+        $this->setStatement('SELECT');
+
+        foreach ($columns as $column) {
+            $this->select($column);
+        }
+
+        return $this;
+    }
+
+
     public function select(string ...$columns): static
     {
         $this->setStatement('SELECT');

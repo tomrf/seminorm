@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Tomrf\Seminorm\QueryBuilder\Trait;
+namespace Tomrf\Seminorm\QueryBuilder\Trait\Clause;
 
-trait WhereMethodsTrait
+trait WhereTrait
 {
     public function where(string $column, string $operator, int|float|string $value): static
     {
